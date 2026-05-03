@@ -1,8 +1,8 @@
 ﻿using InstrumentPlatform.Entities;
 
-namespace InstrumentPlatform.Service
+namespace InstrumentPlatform.Data
 {
-    public interface IRepositoryService
+    public interface IRepository
     {
 
         /// <summary>

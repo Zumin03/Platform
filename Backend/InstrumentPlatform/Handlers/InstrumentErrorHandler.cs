@@ -1,5 +1,5 @@
-﻿using InstrumentPlatform.Enums;
-using InstrumentPlatform.Service;
+﻿using InstrumentPlatform.Data;
+using InstrumentPlatform.Enums;
 
 namespace InstrumentPlatform.Handlers
 {
@@ -8,19 +8,19 @@ namespace InstrumentPlatform.Handlers
     /// </summary>
     public class InstrumentErrorHandler : IInstrumentErrorHandler
     {
-        private readonly IRepositoryService repositoryService;
+        private readonly IRepository repository;
 
-        public InstrumentErrorHandler(IRepositoryService repositoryService)
+        public InstrumentErrorHandler(IRepository repository)
         {
-            this.repositoryService = repositoryService;
+            this.repository = repository;
         }
 
         /// <inheritdoc/>
         public async Task<string> HandleCommunicationError(string deviceId)
         {
-            var instrument = await repositoryService.GetInstrumentById(deviceId);
+            var instrument = await repository.GetInstrumentById(deviceId);
             instrument.State = InstrumentState.Faulted;
-            await repositoryService.RegisterInstrument(instrument);
+            await repository.RegisterInstrument(instrument);
 
             return instrument.Id;
         }

@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IMeasurementService, MeasurementService>();
 builder.Services.AddScoped<IInstrumentService, InstrumentService>();
-builder.Services.AddScoped<IRepositoryService, RepositoryService>();
+builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<ISerialCommunicationService, SerialCommunicationService>();
 builder.Services.AddScoped<IInstrumentErrorHandler, InstrumentErrorHandler>();
 builder.Services.AddScoped<ITimeService, TimeService>();

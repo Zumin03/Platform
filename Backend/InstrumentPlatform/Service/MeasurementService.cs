@@ -4,25 +4,26 @@ using InstrumentPlatform.Exceptions;
 using InstrumentPlatform.Model;
 using InstrumentPlatform.Enums;
 using InstrumentPlatform.Handlers;
+using InstrumentPlatform.Data;
 
 namespace InstrumentPlatform.Service
 {
     public class MeasurementService : IMeasurementService
     {
-        private readonly IRepositoryService repositoryService;
+        private readonly IRepository repository;
         private readonly ISerialCommunicationService serialCommunicationService;
         private readonly ILogger<IMeasurementService> logger;
         private readonly IInstrumentErrorHandler instrumentErrorHandler;
         private readonly ITimeService timeService;
 
         public MeasurementService(
-            IRepositoryService repositoryService,
+            IRepository repository,
             ISerialCommunicationService serialCommunicationService,
             ILogger<IMeasurementService> logger,
             IInstrumentErrorHandler instrumentErrorHandler,
             ITimeService timeService)
         {
-            this.repositoryService = repositoryService;
+            this.repository = repository;
             this.serialCommunicationService = serialCommunicationService;
             this.logger = logger;
             this.instrumentErrorHandler = instrumentErrorHandler;
@@ -32,7 +33,7 @@ namespace InstrumentPlatform.Service
         /// <inheritdoc/>
         public async Task<MeasurementDTO> RunMeasurementAsync(string deviceId)
         {
-            var instrument = await repositoryService.GetInstrumentById(deviceId);
+            var instrument = await repository.GetInstrumentById(deviceId);
 
             try
             {
@@ -45,7 +46,7 @@ namespace InstrumentPlatform.Service
                 var line = serialCommunicationService.SendCommand(InstrumentCommand.Measure, instrument.Port, 9600);
 
                 var result = DeserializeMeasurement(line);
-                result = await repositoryService.SaveMeasurement(result);
+                result = await repository.SaveMeasurement(result);
 
                 return MapMeasurementToDTO(result);
             }
@@ -59,7 +60,7 @@ namespace InstrumentPlatform.Service
         /// <inheritdoc/>
         public async Task<IEnumerable<MeasurementDTO>> GetMeasurementsAsync()
         {
-            var measurements = await repositoryService.GetMeasurements();
+            var measurements = await repository.GetMeasurements();
 
             var response = measurements.Select(MapMeasurementToDTO).ToList();
             return response;

@@ -3,20 +3,16 @@
     using System.IO.Ports;
     using InstrumentPlatform.Enums;
     using InstrumentPlatform.Extensions;
-    using InstrumentPlatform.Handlers;
 
     public class SerialCommunicationService : ISerialCommunicationService
     {
         private readonly ILogger<ISerialCommunicationService> logger;
-        private readonly IInstrumentErrorHandler instrumentErrorHandler;
 
         /// <inheritdoc/>
         public SerialCommunicationService(
-            ILogger<ISerialCommunicationService> logger,
-            IInstrumentErrorHandler instrumentErrorHandler)
+            ILogger<ISerialCommunicationService> logger)
         {
             this.logger = logger;
-            this.instrumentErrorHandler = instrumentErrorHandler;
         }
 
         /// <inheritdoc/>

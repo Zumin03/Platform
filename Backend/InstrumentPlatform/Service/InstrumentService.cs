@@ -1,4 +1,5 @@
-﻿using InstrumentPlatform.Entities;
+﻿using InstrumentPlatform.Data;
+using InstrumentPlatform.Entities;
 using InstrumentPlatform.Enums;
 using InstrumentPlatform.Exceptions;
 using InstrumentPlatform.Handlers;
@@ -10,19 +11,19 @@ namespace InstrumentPlatform.Service
 {
     public class InstrumentService : IInstrumentService
     {
-        private readonly IRepositoryService repositorySerice;
+        private readonly IRepository repository;
         private readonly ISerialCommunicationService serialCommunicationService;
         private readonly IInstrumentErrorHandler instrumentErrorHandler;
         private readonly ILogger<InstrumentService> logger;
         private readonly int defaultBaudRate = 9600;
 
         public InstrumentService(
-            IRepositoryService repositoryService,
+            IRepository repository,
             ISerialCommunicationService serialCommunicationService,
             ILogger<InstrumentService> logger,
             IInstrumentErrorHandler instrumentErrorHandler)
         {
-            this.repositorySerice = repositoryService;
+            this.repository = repository;
             this.serialCommunicationService = serialCommunicationService;
             this.logger = logger;
             this.instrumentErrorHandler = instrumentErrorHandler;
@@ -32,7 +33,7 @@ namespace InstrumentPlatform.Service
         public async Task DetectInstrumentsAsync()
         {
             var activePorts = SerialPort.GetPortNames();
-            await repositorySerice.ResetInstrumentsState();
+            await repository.ResetInstrumentsState();
 
             foreach (var port in activePorts)
             {
@@ -44,7 +45,7 @@ namespace InstrumentPlatform.Service
 
                     var instrumentEntity = DeserializeInstrument(identificationResponse);
                     instrumentEntity.Port = port;
-                    var isAuthorized = await repositorySerice.IsInstrumentAuthorized(instrumentEntity.Id);
+                    var isAuthorized = await repository.IsInstrumentAuthorized(instrumentEntity.Id);
                     if (!isAuthorized)
                     {
                         throw new InstrumentNotAuthorizedException(instrumentEntity.Id);
@@ -54,7 +55,7 @@ namespace InstrumentPlatform.Service
 
                     instrumentEntity.State = selfTestResponse != null ? GetSelfTestResult(selfTestResponse) : InstrumentState.Faulted;
 
-                    await repositorySerice.RegisterInstrument(instrumentEntity);
+                    await repository.RegisterInstrument(instrumentEntity);
                 }
                 catch (TimeoutException)
                 {
@@ -124,7 +125,7 @@ namespace InstrumentPlatform.Service
         /// <inheritdoc/>
         public async Task<IEnumerable<InstrumentDTO>> GetInstrumentsAsync()
         {
-            var instruments = await repositorySerice.GetInstruments();
+            var instruments = await repository.GetInstruments();
             var response = instruments.Select(MapInstrumentToDTO).ToList();
             return response;
         }
@@ -132,7 +133,7 @@ namespace InstrumentPlatform.Service
         /// <inheritdoc/>
         public async Task<InstrumentDTO> GetInstrumentAsync(string id)
         {
-            var instruement = await repositorySerice.GetInstrumentById(id);
+            var instruement = await repository.GetInstrumentById(id);
             var response = MapInstrumentToDTO(instruement);
 
             return response;
@@ -142,7 +143,7 @@ namespace InstrumentPlatform.Service
         public async Task<InstrumentDTO> RunSelfTest(string id)
         {
             logger.LogInformation($"Running self test on instrument with id: {id}");
-            var instrument = await repositorySerice.GetInstrumentById(id);
+            var instrument = await repository.GetInstrumentById(id);
 
             try
             {
@@ -150,7 +151,7 @@ namespace InstrumentPlatform.Service
 
                 instrument.State = selfTestResponse != null ? GetSelfTestResult(selfTestResponse) : InstrumentState.Faulted;
 
-                await repositorySerice.RegisterInstrument(instrument);
+                await repository.RegisterInstrument(instrument);
                 return MapInstrumentToDTO(instrument);
             }
             catch (FileNotFoundException)

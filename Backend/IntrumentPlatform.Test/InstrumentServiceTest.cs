@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using InstrumentPlatform.Data;
 using InstrumentPlatform.Entities;
 using InstrumentPlatform.Enums;
 using InstrumentPlatform.Exceptions;
@@ -17,7 +18,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new InstrumentService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<InstrumentService>>(),
                 Substitute.For<IInstrumentErrorHandler>());
@@ -50,7 +51,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new InstrumentService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<InstrumentService>>(),
                 Substitute.For<IInstrumentErrorHandler>());
@@ -66,7 +67,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new InstrumentService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<InstrumentService>>(),
                 Substitute.For<IInstrumentErrorHandler>());
@@ -90,7 +91,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new InstrumentService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<InstrumentService>>(),
                 Substitute.For<IInstrumentErrorHandler>());
@@ -105,7 +106,7 @@ namespace IntrumentPlatform.Test
         public void GetSelfTestResult_ValidJson_ReturnsInstrumentState()
         {
             var service = new InstrumentService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<InstrumentService>>(),
                 Substitute.For<IInstrumentErrorHandler>());
@@ -126,7 +127,7 @@ namespace IntrumentPlatform.Test
         public async Task GetInstrumentsAsync_RetunsMappedDTOs()
         {
             // Arrange
-            var repositoryMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
 
             var instruments = new List<InstrumentEntity>
             {
@@ -182,7 +183,7 @@ namespace IntrumentPlatform.Test
         public async Task GetInstrumentAsync_RetunsMappedDTOs()
         {
             // Arrange
-            var repositoryMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
 
             var instrument = new InstrumentEntity(
                 id: "dev1",
@@ -221,7 +222,7 @@ namespace IntrumentPlatform.Test
         public async Task RunSelfTest_ReturnsInstrumentDTO()
         {
             // Arrange
-            var repositoryMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
             var serialCommunicationServiceMock = Substitute.For<ISerialCommunicationService>();
 
             var instrument = new InstrumentEntity(
@@ -271,7 +272,7 @@ namespace IntrumentPlatform.Test
         public async Task RunSelfTest_WhenFileNotFoundThrown_ThrowsInstrumentCommunicationException()
         {
             // Arrange
-            var repositoryMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
             var serialCommunicationServiceMock = Substitute.For<ISerialCommunicationService>();
 
             var instrument = new InstrumentEntity(

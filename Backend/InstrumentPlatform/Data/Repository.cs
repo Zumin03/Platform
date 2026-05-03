@@ -2,18 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using InstrumentPlatform.Enums;
 using InstrumentPlatform.Exceptions;
-using InstrumentPlatform.Data;
+using InstrumentPlatform.Service;
 
-namespace InstrumentPlatform.Service
+namespace InstrumentPlatform.Data
 {
-    public class RepositoryService : IRepositoryService
+    public class Repository : IRepository
     {
-        private readonly ILogger<IRepositoryService> logger;
+        private readonly ILogger<IRepository> logger;
         private readonly ITimeService timeService;
         private readonly AppDbContext db;
 
-        public RepositoryService(
-            ILogger<IRepositoryService> logger,
+        public Repository(
+            ILogger<IRepository> logger,
             AppDbContext db,
             ITimeService timeService)
         {

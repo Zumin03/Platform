@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using InstrumentPlatform.Data;
 using InstrumentPlatform.Entities;
 using InstrumentPlatform.Enums;
 using InstrumentPlatform.Exceptions;
@@ -18,7 +19,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new MeasurementService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<MeasurementService>>(),
                 Substitute.For<IInstrumentErrorHandler>(),
@@ -43,7 +44,7 @@ namespace IntrumentPlatform.Test
         {
             // Arrange
             var service = new MeasurementService(
-                Substitute.For<IRepositoryService>(),
+                Substitute.For<IRepository>(),
                 Substitute.For<ISerialCommunicationService>(),
                 Substitute.For<ILogger<MeasurementService>>(),
                 Substitute.For<IInstrumentErrorHandler>(),
@@ -61,7 +62,7 @@ namespace IntrumentPlatform.Test
         public async Task GetMeasurementsAsync_ValidData_ReturnsMappedDTOs()
         {
             // Arrange
-            var repositoryMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
 
             var instrument = new InstrumentEntity(
                     id: "test0",
@@ -108,7 +109,7 @@ namespace IntrumentPlatform.Test
         public async Task RunMeasurementAsync_ThrowsInstrumentCommunicationException()
         {
             // Arrange
-            var repositoryServiceMock = Substitute.For<IRepositoryService>();
+            var repositoryMock = Substitute.For<IRepository>();
             var serialServiceMock = Substitute.For<ISerialCommunicationService>();
             var instruermentErrorHandlerMock = Substitute.For<IInstrumentErrorHandler>();
             var deviceId = "testId";
@@ -122,7 +123,7 @@ namespace IntrumentPlatform.Test
                     port: "COM0",
                     state: InstrumentState.Connected);
 
-            repositoryServiceMock.GetInstrumentById(deviceId).Returns(instrument);
+            repositoryMock.GetInstrumentById(deviceId).Returns(instrument);
 
             serialServiceMock.SendCommand(InstrumentCommand.Measure, "COM0", 9600)
                 .Returns(x =>
@@ -131,7 +132,7 @@ namespace IntrumentPlatform.Test
                     });
 
             var service = new MeasurementService(
-                repositoryServiceMock,
+                repositoryMock,
                 serialServiceMock,
                 Substitute.For<ILogger<MeasurementService>>(),
                 instruermentErrorHandlerMock,
